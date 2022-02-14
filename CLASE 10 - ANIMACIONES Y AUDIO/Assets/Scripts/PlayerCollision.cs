@@ -11,15 +11,22 @@ public class PlayerCollision : MonoBehaviour
         Debug.Log(name + " COLISION CON " + other.gameObject.name);
         if (other.gameObject.CompareTag("Enemy"))
         {
-            //Destroy(gameObject);
             Debug.Log("GAME OVER");
         }
 
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            gameObject.GetComponent<PlayerMovement>().SetJumpStatus(true);
+        }
     }
 
     private void OnCollisionExit(Collision other)
     {
-
+        Debug.Log(name + " EXIT COLISION CON " + other.gameObject.name);
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            gameObject.GetComponent<PlayerMovement>().SetJumpStatus(false);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
