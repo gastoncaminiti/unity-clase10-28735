@@ -14,6 +14,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float timePass = 0;
 
     [SerializeField] private float speedJump = 1f;
+
+    [SerializeField] private Animator playerAnimator;
+
     private bool canJump;
 
     private GameObject parentBullets;
@@ -22,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         parentBullets = GameObject.Find("DinamycBullets");
+        
     }
     void Update()
     {
@@ -42,15 +46,16 @@ public class PlayerMovement : MonoBehaviour
 
     public void SetJumpStatus(bool status){
         canJump = status;
+        playerAnimator.SetBool("isJump", !status);
     }
 
     private void ShootPlayer()
     {
         if (Input.GetKeyDown(KeyCode.E) && canShoot)
         {
-            GameObject newBullet = Instantiate(bulletPrefab, shootPoint.transform.position, transform.rotation);// PROYECTILES
-            newBullet.transform.parent = parentBullets.transform;
             canShoot = false;
+            playerAnimator.SetBool("isShoot", !canShoot);
+            Invoke("DelayShoot",1f);
         }
 
         if (!canShoot)
@@ -62,7 +67,14 @@ public class PlayerMovement : MonoBehaviour
         {
             timePass = 0;
             canShoot = true;
+            playerAnimator.SetBool("isShoot", !canShoot);
         }
+    }
+
+    private void DelayShoot()
+    {
+        GameObject newBullet = Instantiate(bulletPrefab, shootPoint.transform.position, transform.rotation);// PROYECTILES
+        newBullet.transform.parent = parentBullets.transform;
     }
 
     private void MovePlayer()
@@ -70,10 +82,16 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.W))
         {
             MovePlayer(Vector3.forward);
+            playerAnimator.SetBool("isRun", true);
         }
         if (Input.GetKey(KeyCode.S))
         {
             MovePlayer(Vector3.back);
+            playerAnimator.SetBool("isRun", true);
+        }
+
+        if(Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.S)){
+            playerAnimator.SetBool("isRun", false);
         }
     }
 
